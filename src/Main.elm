@@ -4,10 +4,11 @@ import Browser
 import Browser.Navigation as Navigation
 import Element exposing (Element, layout)
 import Route
+import State.ChooseGame as ChooseGame
 import State.Game as Game
 import State.Home as Home
 import Url exposing (Url)
-import View.NotFound as NotFound
+import View.Error as Error
 
 
 
@@ -22,8 +23,9 @@ type alias Model =
 
 type State
     = ViewingHomePage Home.State
+    | ChoosingGame ChooseGame.State
     | PlayingGame Game.State
-    | PageNotFound
+    | Error String
 
 
 
@@ -33,6 +35,7 @@ type State
 type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
+    | ChooseGameMsg ChooseGame.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -55,6 +58,15 @@ update msg model =
                     , Cmd.none
                     )
 
+                Route.ChooseGame ->
+                    let
+                        ( initialState, cmd ) =
+                            ChooseGame.init ChooseGameMsg
+                    in
+                    ( { model | state = ChoosingGame initialState }
+                    , cmd
+                    )
+
                 Route.Game ->
                     ( { model | state = PlayingGame Game.init }
                     , Cmd.none
@@ -62,8 +74,20 @@ update msg model =
 
                 Route.NotFound ->
                     ( { model
-                        | state = PageNotFound
+                        | state = Error "Page not found"
                       }
+                    , Cmd.none
+                    )
+
+        ChooseGameMsg choosingGameMsg ->
+            case model.state of
+                ChoosingGame choosingGameState ->
+                    ( { model | state = ChoosingGame <| ChooseGame.update choosingGameMsg choosingGameState }
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( { model | state = Error "Something has gone wrong" }
                     , Cmd.none
                     )
 
@@ -81,11 +105,14 @@ view model =
                 ViewingHomePage homeState ->
                     Home.view homeState
 
+                ChoosingGame chooseGameState ->
+                    ChooseGame.view chooseGameState
+
                 PlayingGame gameState ->
                     Game.view gameState
 
-                PageNotFound ->
-                    NotFound.view
+                Error str ->
+                    Error.view str
         ]
     }
 

@@ -7,6 +7,7 @@ import Url.Parser as Parser exposing (Parser, map, oneOf, parse, s, top)
 
 type Route
     = Home
+    | ChooseGame
     | Game
     | NotFound
 
@@ -14,6 +15,11 @@ type Route
 homeString : String
 homeString =
     "home"
+
+
+chooseGameString : String
+chooseGameString =
+    "choose-game"
 
 
 gameString : String
@@ -32,6 +38,9 @@ toString route =
         Home ->
             homeString
 
+        ChooseGame ->
+            chooseGameString
+
         Game ->
             gameString
 
@@ -44,6 +53,7 @@ parser =
     oneOf
         [ map Home top
         , map Home <| s homeString
+        , map ChooseGame <| s chooseGameString
         , map Game <| s gameString
         ]
 

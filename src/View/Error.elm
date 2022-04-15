@@ -1,13 +1,13 @@
-module View.NotFound exposing (view)
+module View.Error exposing (view)
 
 import Element exposing (..)
 import Route
 
 
-view : Element msg
-view =
+view : String -> Element msg
+view str =
     column []
-        [ text "Page not found"
+        [ text str
         , link []
             { url = Route.toPath Route.Home
             , label = text "Go back"

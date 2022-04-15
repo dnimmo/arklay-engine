@@ -7,6 +7,6 @@ import Route
 view : Element msg
 view =
     link []
-        { url = Route.toPath Route.Game
+        { url = Route.toPath Route.ChooseGame
         , label = text "Start"
         }
