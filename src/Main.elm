@@ -2,7 +2,8 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Navigation
-import Element exposing (..)
+import Element exposing (Element, layout)
+import State.Home as Home
 import Url exposing (Url)
 
 
@@ -10,8 +11,14 @@ import Url exposing (Url)
 -- MODEL
 
 
-type Model
-    = Model
+type alias Model =
+    { navKey : Navigation.Key
+    , state : State
+    }
+
+
+type State
+    = ViewingHomePage Home.State
 
 
 
@@ -37,8 +44,11 @@ update msg model =
 view : Model -> Browser.Document Msg
 view model =
     { title = "Arklay"
-    , body = 
-        [ layout [] <| text "Hello"
+    , body =
+        [ layout [] <|
+            case model.state of
+                ViewingHomePage homeState ->
+                    Home.view homeState
         ]
     }
 
@@ -46,13 +56,18 @@ view model =
 
 -- INIT
 
-type alias Flags = 
-    { height : Int 
-    , width : Int }
+
+type alias Flags =
+    { height : Int
+    , width : Int
+    }
+
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
-    ( Model
+    ( { navKey = navKey
+      , state = ViewingHomePage Home.init
+      }
     , Cmd.none
     )
 
