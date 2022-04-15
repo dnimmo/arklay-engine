@@ -3,8 +3,11 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Navigation
 import Element exposing (Element, layout)
+import Route
+import State.Game as Game
 import State.Home as Home
 import Url exposing (Url)
+import View.NotFound as NotFound
 
 
 
@@ -19,6 +22,8 @@ type alias Model =
 
 type State
     = ViewingHomePage Home.State
+    | PlayingGame Game.State
+    | PageNotFound
 
 
 
@@ -32,9 +37,35 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model
-    , Cmd.none
-    )
+    case msg of
+        UrlRequested (Browser.Internal url) ->
+            ( model
+            , Navigation.pushUrl model.navKey <| Url.toString url
+            )
+
+        UrlRequested (Browser.External urlString) ->
+            ( model
+            , Navigation.load urlString
+            )
+
+        UrlChanged url ->
+            case Route.fromUrl url of
+                Route.Home ->
+                    ( { model | state = ViewingHomePage Home.init }
+                    , Cmd.none
+                    )
+
+                Route.Game ->
+                    ( { model | state = PlayingGame Game.init }
+                    , Cmd.none
+                    )
+
+                Route.NotFound ->
+                    ( { model
+                        | state = PageNotFound
+                      }
+                    , Cmd.none
+                    )
 
 
 
@@ -49,6 +80,12 @@ view model =
             case model.state of
                 ViewingHomePage homeState ->
                     Home.view homeState
+
+                PlayingGame gameState ->
+                    Game.view gameState
+
+                PageNotFound ->
+                    NotFound.view
         ]
     }
 

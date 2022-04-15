@@ -1,8 +1,12 @@
 module View.Home exposing (view)
 
 import Element exposing (..)
+import Route
 
 
 view : Element msg
 view =
-    text "Home"
+    link []
+        { url = Route.toPath Route.Game
+        , label = text "Start"
+        }
