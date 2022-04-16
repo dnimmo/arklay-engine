@@ -3,12 +3,13 @@ module Main exposing (main)
 import Browser
 import Browser.Navigation as Navigation
 import Element exposing (Element, layout)
+import Game exposing (Game)
 import Route
 import State.ChooseGame as ChooseGame
 import State.Game as Game
-import State.Home as Home
 import Url exposing (Url)
 import View.Error as Error
+import View.Home as Home
 
 
 
@@ -22,7 +23,7 @@ type alias Model =
 
 
 type State
-    = ViewingHomePage Home.State
+    = ViewingHomePage
     | ChoosingGame ChooseGame.State
     | PlayingGame Game.State
     | Error String
@@ -36,6 +37,41 @@ type Msg
     = UrlChanged Url
     | UrlRequested Browser.UrlRequest
     | ChooseGameMsg ChooseGame.Msg
+    | GameMsg Game.Msg
+
+
+handleUrlChange : Model -> Url -> ( Model, Cmd Msg )
+handleUrlChange model url =
+    case Route.fromUrl url of
+        Route.Home ->
+            ( { model | state = ViewingHomePage }
+            , Cmd.none
+            )
+
+        Route.ChooseGame ->
+            let
+                ( initialState, cmd ) =
+                    ChooseGame.init ChooseGameMsg
+            in
+            ( { model | state = ChoosingGame initialState }
+            , cmd
+            )
+
+        Route.Game gameId ->
+            let
+                ( initialState, cmd ) =
+                    Game.init GameMsg gameId
+            in
+            ( { model | state = PlayingGame initialState }
+            , cmd
+            )
+
+        Route.NotFound ->
+            ( { model
+                | state = Error "Page not found"
+              }
+            , Cmd.none
+            )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -52,32 +88,7 @@ update msg model =
             )
 
         UrlChanged url ->
-            case Route.fromUrl url of
-                Route.Home ->
-                    ( { model | state = ViewingHomePage Home.init }
-                    , Cmd.none
-                    )
-
-                Route.ChooseGame ->
-                    let
-                        ( initialState, cmd ) =
-                            ChooseGame.init ChooseGameMsg
-                    in
-                    ( { model | state = ChoosingGame initialState }
-                    , cmd
-                    )
-
-                Route.Game ->
-                    ( { model | state = PlayingGame Game.init }
-                    , Cmd.none
-                    )
-
-                Route.NotFound ->
-                    ( { model
-                        | state = Error "Page not found"
-                      }
-                    , Cmd.none
-                    )
+            handleUrlChange model url
 
         ChooseGameMsg choosingGameMsg ->
             case model.state of
@@ -88,6 +99,24 @@ update msg model =
 
                 _ ->
                     ( { model | state = Error "Something has gone wrong" }
+                    , Cmd.none
+                    )
+
+        GameMsg gameMsg ->
+            case model.state of
+                PlayingGame gameState ->
+                    let
+                        ( newState, cmd ) =
+                            Game.update GameMsg gameMsg gameState
+                    in
+                    ( { model | state = PlayingGame newState }
+                    , cmd
+                    )
+
+                _ ->
+                    ( { model
+                        | state = Error "Something has gone wrong"
+                      }
                     , Cmd.none
                     )
 
@@ -102,8 +131,8 @@ view model =
     , body =
         [ layout [] <|
             case model.state of
-                ViewingHomePage homeState ->
-                    Home.view homeState
+                ViewingHomePage ->
+                    Home.view
 
                 ChoosingGame chooseGameState ->
                     ChooseGame.view chooseGameState
@@ -129,11 +158,11 @@ type alias Flags =
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init flags url navKey =
-    ( { navKey = navKey
-      , state = ViewingHomePage Home.init
-      }
-    , Cmd.none
-    )
+    handleUrlChange
+        { navKey = navKey
+        , state = ViewingHomePage
+        }
+        url
 
 
 subscriptions : Model -> Sub Msg

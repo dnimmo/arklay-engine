@@ -10,8 +10,8 @@ import Dict exposing (Dict)
 import Element exposing (Element)
 import Game exposing (Game)
 import Http
-import Json.Decode as Decode
 import View.ChooseGame as ChooseGame
+import View.Error as ErrorView
 
 
 
@@ -21,7 +21,7 @@ import View.ChooseGame as ChooseGame
 type State
     = Loading
     | DisplayingGameList (Dict String Game)
-    | Error String
+    | Error Http.Error
 
 
 
@@ -39,24 +39,7 @@ update msg state =
             DisplayingGameList gameDict
 
         ReceivedGameInfo (Err err) ->
-            Error <|
-                "Please accept our apologies, something has gone wrong. "
-                    ++ (case err of
-                            Http.BadUrl str ->
-                                "There was a problem with the URL requested: " ++ str
-
-                            Http.Timeout ->
-                                "The request timed out. Please check your connection and try again."
-
-                            Http.NetworkError ->
-                                "There seems to be a problem with your connection. Please check your connection and try again."
-
-                            Http.BadStatus int ->
-                                "Received status: " ++ String.fromInt int
-
-                            Http.BadBody str ->
-                                str
-                       )
+            Error err
 
 
 
@@ -72,8 +55,8 @@ view state =
         DisplayingGameList gameDict ->
             ChooseGame.view gameDict
 
-        Error str ->
-            ChooseGame.errorView str
+        Error err ->
+            ErrorView.httpErrorView err
 
 
 
@@ -83,12 +66,5 @@ view state =
 init : (Msg -> msg) -> ( State, Cmd msg )
 init on =
     ( Loading
-    , Http.get
-        { url = "/games.json"
-        , expect =
-            Http.expectJson
-                (on << ReceivedGameInfo)
-            <|
-                Decode.dict Game.decode
-        }
+    , Game.fetchGames <| on << ReceivedGameInfo
     )

@@ -2,13 +2,13 @@ module Route exposing (Route(..), fromUrl, toPath)
 
 import Browser.Navigation as Navigation
 import Url exposing (Url)
-import Url.Parser as Parser exposing (Parser, map, oneOf, parse, s, top)
+import Url.Parser as Parser exposing ((</>), Parser, map, oneOf, parse, s, string, top)
 
 
 type Route
     = Home
     | ChooseGame
-    | Game
+    | Game String
     | NotFound
 
 
@@ -41,8 +41,8 @@ toString route =
         ChooseGame ->
             chooseGameString
 
-        Game ->
-            gameString
+        Game gameId ->
+            gameString ++ "/" ++ gameId
 
         NotFound ->
             notFoundString
@@ -54,7 +54,7 @@ parser =
         [ map Home top
         , map Home <| s homeString
         , map ChooseGame <| s chooseGameString
-        , map Game <| s gameString
+        , map Game <| s gameString </> string
         ]
 
 

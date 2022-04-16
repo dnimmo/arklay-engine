@@ -7,7 +7,10 @@ module State.Game exposing
     )
 
 import Element exposing (Element)
-import View.Game as Game
+import Game exposing (Game)
+import Http
+import View.Error as ErrorView
+import View.Game as GameView
 
 
 
@@ -15,7 +18,9 @@ import View.Game as Game
 
 
 type State
-    = State
+    = Loading
+    | Playing Game
+    | Error Http.Error
 
 
 
@@ -23,12 +28,21 @@ type State
 
 
 type Msg
-    = Msg
+    = GameResultReceieved (Result Http.Error Game)
 
 
-update : Msg -> State -> State
-update msg state =
-    state
+update : (Msg -> msg) -> Msg -> State -> ( State, Cmd msg )
+update on msg state =
+    case msg of
+        GameResultReceieved (Ok game) ->
+            ( Playing game
+            , Cmd.none
+            )
+
+        GameResultReceieved (Err err) ->
+            ( Error err
+            , Cmd.none
+            )
 
 
 
@@ -37,13 +51,23 @@ update msg state =
 
 view : State -> Element msg
 view state =
-    Game.view
+    case state of
+        Loading ->
+            GameView.loadingView
+
+        Playing game ->
+            GameView.view game
+
+        Error err ->
+            ErrorView.httpErrorView err
 
 
 
 -- INIT
 
 
-init : State
-init =
-    State
+init : (Msg -> msg) -> String -> ( State, Cmd msg )
+init on gameId =
+    ( Loading
+    , Game.fetchSpecificGame gameId <| on << GameResultReceieved
+    )

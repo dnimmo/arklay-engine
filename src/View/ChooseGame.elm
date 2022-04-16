@@ -1,12 +1,12 @@
 module View.ChooseGame exposing
-    ( errorView
-    , loadingView
+    ( loadingView
     , view
     )
 
 import Dict exposing (Dict)
 import Element exposing (..)
 import Game exposing (Game)
+import Route
 
 
 loadingView : Element msg
@@ -14,11 +14,12 @@ loadingView =
     text "Loading"
 
 
-gameItem : Game -> Element msg
-gameItem =
-    el []
-        << text
-        << Game.getName
+gameItem : String -> Game -> Element msg
+gameItem id game =
+    link []
+        { url = Route.toPath <| Route.Game id
+        , label = text <| Game.getName game
+        }
 
 
 gameList : Dict String Game -> Element msg
@@ -27,8 +28,8 @@ gameList gameDict =
         (gameDict
             |> Dict.toList
             |> List.map
-                (\( _, game ) ->
-                    gameItem game
+                (\( id, game ) ->
+                    gameItem id game
                 )
         )
 
@@ -39,8 +40,3 @@ view gameDict =
         [ text "Choose game"
         , gameList gameDict
         ]
-
-
-errorView : String -> Element msg
-errorView str =
-    text str
