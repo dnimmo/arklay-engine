@@ -1,7 +1,8 @@
-module View.Game exposing (loadingView, view)
+module View.Game exposing (loadingView, playingView)
 
 import Element exposing (..)
 import Game exposing (Game)
+import Inventory exposing (Inventory)
 
 
 loadingView : Element msg
@@ -9,6 +10,6 @@ loadingView =
     text "Loading"
 
 
-view : Game -> Element msg
-view game =
+playingView : Game -> Inventory -> Element msg
+playingView game inventory =
     text <| Game.getName game

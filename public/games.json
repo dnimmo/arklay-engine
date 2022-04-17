@@ -1,6 +1,7 @@
 {
     "PROJECT_ARKLAY":{
       "name":"Project Arklay",
+      "startingRoom" : "START",
       "rooms":{
         "START":{
           "name":"Start",

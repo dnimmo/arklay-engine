@@ -9,6 +9,8 @@ module State.Game exposing
 import Element exposing (Element)
 import Game exposing (Game)
 import Http
+import Inventory exposing (Inventory)
+import Room exposing (Room)
 import View.Error as ErrorView
 import View.Game as GameView
 
@@ -19,8 +21,9 @@ import View.Game as GameView
 
 type State
     = Loading
-    | Playing Game
-    | Error Http.Error
+    | Playing { game : Game, inventory : Inventory, currentRoom : Room }
+    | HttpError Http.Error
+    | GameError String
 
 
 
@@ -35,12 +38,23 @@ update : (Msg -> msg) -> Msg -> State -> ( State, Cmd msg )
 update on msg state =
     case msg of
         GameResultReceieved (Ok game) ->
-            ( Playing game
-            , Cmd.none
-            )
+            case Game.getStartingRoom game of
+                Just startingRoom ->
+                    ( Playing
+                        { game = game
+                        , inventory = Inventory.emptyInventory
+                        , currentRoom = startingRoom
+                        }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    ( GameError <| "Loaded " ++ Game.getName game ++ " successfully, but there is no starting room."
+                    , Cmd.none
+                    )
 
         GameResultReceieved (Err err) ->
-            ( Error err
+            ( HttpError err
             , Cmd.none
             )
 
@@ -55,11 +69,14 @@ view state =
         Loading ->
             GameView.loadingView
 
-        Playing game ->
-            GameView.view game
+        Playing { game, inventory, currentRoom } ->
+            GameView.playingView game inventory
 
-        Error err ->
+        HttpError err ->
             ErrorView.httpErrorView err
+
+        GameError str ->
+            ErrorView.view str
 
 
 

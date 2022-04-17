@@ -4,6 +4,7 @@ module Game exposing
     , fetchGames
     , fetchSpecificGame
     , getName
+    , getStartingRoom
     )
 
 import Dict exposing (Dict)
@@ -19,6 +20,7 @@ type Game
 
 type alias Details =
     { name : String
+    , startingRoom : String
     , rooms : Dict String Room
     , items : Dict String Item
     }
@@ -29,14 +31,20 @@ getName (Game { name }) =
     name
 
 
+getStartingRoom : Game -> Maybe Room
+getStartingRoom (Game { rooms, startingRoom }) =
+    Dict.get startingRoom rooms
+
+
 
 -- DECODE
 
 
 detailsDecoder : Decoder Details
 detailsDecoder =
-    Decode.map3 Details
+    Decode.map4 Details
         (Decode.field "name" Decode.string)
+        (Decode.field "startingRoom" Decode.string)
         (Decode.field "rooms" <| Decode.dict Room.decode)
         (Decode.field "items" <| Decode.dict Item.decode)
 
