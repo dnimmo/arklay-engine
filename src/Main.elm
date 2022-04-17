@@ -138,7 +138,7 @@ view model =
                     ChooseGame.view chooseGameState
 
                 PlayingGame gameState ->
-                    Game.view gameState
+                    Game.view GameMsg gameState
 
                 Error str ->
                     Error.view str

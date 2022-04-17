@@ -32,6 +32,22 @@ type State
 
 type Msg
     = GameResultReceieved (Result Http.Error Game)
+    | ChangeRoom { roomKey : String }
+
+
+handleRoomChange : State -> String -> State
+handleRoomChange state roomKey =
+    case state of
+        Playing ({ game } as gameDetails) ->
+            case Game.getRoom game roomKey of
+                Just newRoom ->
+                    Playing { gameDetails | currentRoom = newRoom }
+
+                Nothing ->
+                    GameError <| "No room matching given key: " ++ roomKey
+
+        _ ->
+            GameError "Unable to process room change message - not in Playing state"
 
 
 update : (Msg -> msg) -> Msg -> State -> ( State, Cmd msg )
@@ -58,19 +74,29 @@ update on msg state =
             , Cmd.none
             )
 
+        ChangeRoom { roomKey } ->
+            ( handleRoomChange state roomKey
+            , Cmd.none
+            )
+
 
 
 -- VIEW
 
 
-view : State -> Element msg
-view state =
+view : (Msg -> msg) -> State -> Element msg
+view on state =
     case state of
         Loading ->
             GameView.loadingView
 
         Playing { game, inventory, currentRoom } ->
-            GameView.playingView game inventory
+            GameView.playingView
+                { game = game
+                , inventory = inventory
+                , currentRoom = currentRoom
+                , changeRoomMsg = on << ChangeRoom
+                }
 
         HttpError err ->
             ErrorView.httpErrorView err

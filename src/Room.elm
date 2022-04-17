@@ -1,17 +1,17 @@
-module Room exposing (Room, decode)
+module Room exposing
+    ( Room
+    , decode
+    , getAvailableDirections
+    , getIntro
+    , getSurroundings
+    )
 
+import Direction exposing (Direction)
 import Json.Decode as Decode exposing (Decoder)
 
 
 type Room
     = Room Details
-
-
-type alias Direction =
-    { text : String
-    , room : String
-    , itemsThatCanBeUsed : List String
-    }
 
 
 type alias Details =
@@ -24,16 +24,23 @@ type alias Details =
     }
 
 
+getIntro : Room -> String
+getIntro (Room { intro }) =
+    intro
+
+
+getSurroundings : Room -> String
+getSurroundings (Room { surroundings }) =
+    surroundings
+
+
+getAvailableDirections : Room -> List Direction
+getAvailableDirections (Room { availableDirections }) =
+    availableDirections
+
+
 
 -- DECODE
-
-
-directionDecoder : Decoder Direction
-directionDecoder =
-    Decode.map3 Direction
-        (Decode.field "text" Decode.string)
-        (Decode.field "room" Decode.string)
-        (Decode.field "itemsThatCanBeUsed" <| Decode.list Decode.string)
 
 
 detailsDecoder : Decoder Details
@@ -44,7 +51,7 @@ detailsDecoder =
         (Decode.field "surroundings" Decode.string)
         (Decode.field "descriptionWhenExamined" Decode.string)
         (Decode.field "item" <| Decode.maybe Decode.string)
-        (Decode.field "availableDirections" <| Decode.list directionDecoder)
+        (Decode.field "availableDirections" <| Decode.list Direction.decode)
 
 
 decode : Decoder Room

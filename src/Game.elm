@@ -4,6 +4,7 @@ module Game exposing
     , fetchGames
     , fetchSpecificGame
     , getName
+    , getRoom
     , getStartingRoom
     )
 
@@ -31,9 +32,14 @@ getName (Game { name }) =
     name
 
 
+getRoom : Game -> String -> Maybe Room
+getRoom (Game { rooms }) roomKey =
+    Dict.get roomKey rooms
+
+
 getStartingRoom : Game -> Maybe Room
-getStartingRoom (Game { rooms, startingRoom }) =
-    Dict.get startingRoom rooms
+getStartingRoom ((Game { startingRoom }) as game) =
+    getRoom game startingRoom
 
 
 
