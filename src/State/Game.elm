@@ -40,6 +40,7 @@ type Msg
     = GameResultReceieved (Result Http.Error Game)
     | ChangeRoom { roomKey : String }
     | AttemptToEnterLockedRoom
+    | AttemptToUseItem String
     | ExamineRoom Room
 
 
@@ -117,6 +118,34 @@ handleExamineRoom state room =
             playingStateError "examine room"
 
 
+handleAttemptToUseItem : State -> String -> State
+handleAttemptToUseItem state itemId =
+    case state of
+        Playing ({ inventory, currentRoom } as gameDetails) ->
+            case Inventory.getItem inventory itemId of
+                Just item ->
+                    if Room.itemCanBeUsed currentRoom itemId then
+                        Playing
+                            { gameDetails
+                                | inventory = Inventory.useItem inventory itemId
+                                , temporaryMessage =
+                                    Just <| Item.getMessageWhenUsed item
+                            }
+
+                    else
+                        Playing
+                            { gameDetails
+                                | temporaryMessage =
+                                    Just <| Item.getMessageWhenUnableToUse item
+                            }
+
+                Nothing ->
+                    GameError <| "No item exists in inventory for key " ++ itemId
+
+        _ ->
+            playingStateError "attempt to use item"
+
+
 update : (Msg -> msg) -> Msg -> State -> ( State, Cmd msg )
 update on msg state =
     case msg of
@@ -157,6 +186,11 @@ update on msg state =
             , Cmd.none
             )
 
+        AttemptToUseItem item ->
+            ( handleAttemptToUseItem state item
+            , Cmd.none
+            )
+
 
 
 -- VIEW
@@ -177,6 +211,7 @@ view on state =
                 , attemptLockedRoomMsg = on AttemptToEnterLockedRoom
                 , temporaryMessage = temporaryMessage
                 , examineRoomMsg = on << ExamineRoom
+                , useItemMsg = on << AttemptToUseItem
                 }
 
         HttpError err ->

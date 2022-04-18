@@ -20,12 +20,13 @@ direction :
     { changeRoomMsg : { roomKey : String } -> msg
     , attemptLockedRoomMsg : msg
     }
+    -> Inventory
     -> Direction
     -> Element msg
-direction { changeRoomMsg, attemptLockedRoomMsg } directionItem =
+direction { changeRoomMsg, attemptLockedRoomMsg } inventory directionItem =
     let
         isLocked =
-            Direction.isLocked directionItem
+            Direction.isLocked directionItem inventory
     in
     Input.button
         [ alpha <|
@@ -58,11 +59,12 @@ type alias PlayingParams msg =
     , attemptLockedRoomMsg : msg
     , examineRoomMsg : Room -> msg
     , temporaryMessage : Maybe String
+    , useItemMsg : String -> msg
     }
 
 
 playingView : PlayingParams msg -> Element msg
-playingView { game, inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg, temporaryMessage, examineRoomMsg } =
+playingView { game, inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg, temporaryMessage, examineRoomMsg, useItemMsg } =
     column
         [ Background.color <| rgb255 10 10 10
         , Font.color <| rgb255 250 250 250
@@ -78,6 +80,7 @@ playingView { game, inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg,
                     { changeRoomMsg = changeRoomMsg
                     , attemptLockedRoomMsg = attemptLockedRoomMsg
                     }
+                    inventory
                 )
             <|
                 Room.getAvailableDirections currentRoom
@@ -91,5 +94,8 @@ playingView { game, inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg,
 
             Nothing ->
                 none
-        , InventoryView.view inventory
+        , InventoryView.view
+            { inventory = inventory
+            , useItemMsg = useItemMsg
+            }
         ]

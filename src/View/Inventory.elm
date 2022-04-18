@@ -1,18 +1,22 @@
 module View.Inventory exposing (view)
 
 import Element exposing (..)
+import Element.Input as Input
 import Inventory exposing (Inventory)
 import Item exposing (Item)
 
 
-itemElement : ( String, Item ) -> Element msg
-itemElement ( itemId, item ) =
-    text <| Item.getName item
+itemElement : (String -> msg) -> ( String, Item ) -> Element msg
+itemElement useItemMsg ( itemId, item ) =
+    Input.button []
+        { onPress = Just <| useItemMsg itemId
+        , label = text <| Item.getName item
+        }
 
 
-view : Inventory -> Element msg
-view inventory =
+view : { inventory : Inventory, useItemMsg : String -> msg } -> Element msg
+view { inventory, useItemMsg } =
     column [] <|
         text "inventory"
-            :: List.map itemElement
+            :: List.map (itemElement useItemMsg)
                 (Inventory.getItemsWithIds inventory)

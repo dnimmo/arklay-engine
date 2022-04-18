@@ -1,6 +1,8 @@
 module Item exposing
     ( Item
     , decode
+    , getMessageWhenUnableToUse
+    , getMessageWhenUsed
     , getName
     )
 

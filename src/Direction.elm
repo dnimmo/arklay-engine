@@ -7,7 +7,9 @@ module Direction exposing
     , isLocked
     )
 
+import Inventory exposing (Inventory)
 import Json.Decode as Decode exposing (Decoder)
+import Set
 
 
 type Direction
@@ -31,10 +33,13 @@ getRoomId (Direction { room }) =
     room
 
 
-isLocked : Direction -> Bool
-isLocked (Direction { itemsThatCanBeUsed }) =
-    -- TODO pass inventory in here to check used items
-    not <| List.isEmpty itemsThatCanBeUsed
+isLocked : Direction -> Inventory -> Bool
+isLocked (Direction { itemsThatCanBeUsed }) inventory =
+    not <|
+        List.isEmpty itemsThatCanBeUsed
+            || List.all
+                (Inventory.itemHasBeenUsed inventory)
+                itemsThatCanBeUsed
 
 
 getUsableItems : Direction -> List String
