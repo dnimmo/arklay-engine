@@ -146,8 +146,8 @@ handleAttemptToUseItem state itemId =
             playingStateError "attempt to use item"
 
 
-update : (Msg -> msg) -> Msg -> State -> ( State, Cmd msg )
-update on msg state =
+update : Msg -> State -> ( State, Cmd msg )
+update msg state =
     case msg of
         GameResultReceieved (Ok game) ->
             case Game.getStartingRoom game of

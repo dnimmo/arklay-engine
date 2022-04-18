@@ -107,7 +107,7 @@ update msg model =
                 PlayingGame gameState ->
                     let
                         ( newState, cmd ) =
-                            Game.update GameMsg gameMsg gameState
+                            Game.update gameMsg gameState
                     in
                     ( { model | state = PlayingGame newState }
                     , cmd
