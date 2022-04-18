@@ -70,6 +70,7 @@ playingView { game, inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg,
         , Font.color <| rgb255 250 250 250
         , width fill
         , height fill
+        , spacing 50
         ]
         [ text <| Game.getName game
         , text <| Room.getIntro currentRoom
