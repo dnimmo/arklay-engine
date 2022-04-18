@@ -3,6 +3,7 @@ module Direction exposing
     , decode
     , getRoomId
     , getText
+    , getUsableItems
     , isLocked
     )
 
@@ -32,7 +33,13 @@ getRoomId (Direction { room }) =
 
 isLocked : Direction -> Bool
 isLocked (Direction { itemsThatCanBeUsed }) =
+    -- TODO pass inventory in here to check used items
     not <| List.isEmpty itemsThatCanBeUsed
+
+
+getUsableItems : Direction -> List String
+getUsableItems (Direction { itemsThatCanBeUsed }) =
+    itemsThatCanBeUsed
 
 
 

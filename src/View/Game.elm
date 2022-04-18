@@ -70,7 +70,7 @@ playingView { game, inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg,
         ]
         [ text <| Game.getName game
         , text <| Room.getIntro currentRoom
-        , text <| Room.getSurroundings currentRoom
+        , text <| Room.getSurroundings currentRoom inventory
         , column [] <|
             List.map
                 (direction

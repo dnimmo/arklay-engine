@@ -6,9 +6,11 @@ module Room exposing
     , getIntro
     , getMaybeItem
     , getSurroundings
+    , itemCanBeUsed
     )
 
 import Direction exposing (Direction)
+import Inventory exposing (Inventory)
 import Json.Decode as Decode exposing (Decoder)
 
 
@@ -20,6 +22,7 @@ type alias Details =
     { name : String
     , intro : String
     , surroundings : String
+    , surroundingsWhenItemPickedUp : Maybe String
     , examinationText : String
     , item : Maybe String
     , availableDirections : List Direction
@@ -31,9 +34,18 @@ getIntro (Room { intro }) =
     intro
 
 
-getSurroundings : Room -> String
-getSurroundings (Room { surroundings }) =
-    surroundings
+getSurroundings : Room -> Inventory -> String
+getSurroundings (Room { surroundings, item, surroundingsWhenItemPickedUp }) inventory =
+    case item of
+        Just itemId ->
+            if Inventory.containsItem inventory itemId then
+                Maybe.withDefault surroundings surroundingsWhenItemPickedUp
+
+            else
+                surroundings
+
+        Nothing ->
+            surroundings
 
 
 getAvailableDirections : Room -> List Direction
@@ -51,16 +63,25 @@ getMaybeItem (Room { item }) =
     item
 
 
+itemCanBeUsed : Room -> String -> Bool
+itemCanBeUsed (Room { availableDirections }) itemId =
+    availableDirections
+        |> List.map Direction.getUsableItems
+        |> List.concat
+        |> List.member itemId
+
+
 
 -- DECODE
 
 
 detailsDecoder : Decoder Details
 detailsDecoder =
-    Decode.map6 Details
+    Decode.map7 Details
         (Decode.field "name" Decode.string)
         (Decode.field "intro" Decode.string)
         (Decode.field "surroundings" Decode.string)
+        (Decode.field "surroundingsWhenItemPickedUp" <| Decode.maybe Decode.string)
         (Decode.field "descriptionWhenExamined" Decode.string)
         (Decode.field "item" <| Decode.maybe Decode.string)
         (Decode.field "availableDirections" <| Decode.list Direction.decode)
