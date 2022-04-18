@@ -2,8 +2,10 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Navigation
-import Element exposing (Element, layout)
-import Game exposing (Game)
+import Components.Background as Background
+import Components.Font as Font
+import Element exposing (fill, height, layout, width)
+import Game
 import Route
 import State.ChooseGame as ChooseGame
 import State.Game as Game
@@ -92,13 +94,17 @@ update msg model =
 
         ChooseGameMsg choosingGameMsg ->
             case model.state of
-                ChoosingGame choosingGameState ->
-                    ( { model | state = ChoosingGame <| ChooseGame.update choosingGameMsg choosingGameState }
+                ChoosingGame _ ->
+                    ( { model
+                        | state = ChoosingGame <| ChooseGame.update choosingGameMsg
+                      }
                     , Cmd.none
                     )
 
                 _ ->
-                    ( { model | state = Error "Something has gone wrong" }
+                    ( { model
+                        | state = Error "Something has gone wrong"
+                      }
                     , Cmd.none
                     )
 
@@ -129,7 +135,14 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Arklay"
     , body =
-        [ layout [] <|
+        [ layout
+            [ Font.bodyFont
+            , Background.mainColour
+            , Font.mainColour
+            , width fill
+            , height fill
+            ]
+          <|
             case model.state of
                 ViewingHomePage ->
                     Home.view
@@ -157,7 +170,7 @@ type alias Flags =
 
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
-init flags url navKey =
+init _ url navKey =
     handleUrlChange
         { navKey = navKey
         , state = ViewingHomePage
@@ -170,6 +183,7 @@ subscriptions _ =
     Sub.none
 
 
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init

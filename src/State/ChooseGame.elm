@@ -32,8 +32,8 @@ type Msg
     = ReceivedGameInfo (Result Http.Error (Dict String Game))
 
 
-update : Msg -> State -> State
-update msg state =
+update : Msg -> State
+update msg =
     case msg of
         ReceivedGameInfo (Ok gameDict) ->
             DisplayingGameList gameDict

@@ -1,5 +1,6 @@
 module View.Inventory exposing (view)
 
+import Components.Layout as Layout
 import Element exposing (..)
 import Element.Input as Input
 import Inventory exposing (Inventory)
@@ -28,7 +29,12 @@ itemElement inventory useItemMsg ( itemId, item ) =
 
 view : { inventory : Inventory, useItemMsg : String -> msg } -> Element msg
 view { inventory, useItemMsg } =
-    column [] <|
-        text "inventory"
+    column
+        [ width fill
+        , height fill
+        , spacing 20
+        ]
+    <|
+        Layout.header "Inventory"
             :: List.map (itemElement inventory useItemMsg)
                 (Inventory.getItemsWithIds inventory)

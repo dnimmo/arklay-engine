@@ -1,11 +1,9 @@
 module View.Game exposing (loadingView, playingView)
 
+import Components.Layout as Layout
 import Direction exposing (Direction)
 import Element exposing (..)
-import Element.Background as Background
-import Element.Font as Font
 import Element.Input as Input
-import Game exposing (Game)
 import Inventory exposing (Inventory)
 import Room exposing (Room)
 import View.Inventory as InventoryView
@@ -13,7 +11,12 @@ import View.Inventory as InventoryView
 
 loadingView : Element msg
 loadingView =
-    text "..."
+    el
+        [ centerX
+        , centerY
+        ]
+    <|
+        text "..."
 
 
 direction :
@@ -52,8 +55,7 @@ direction { changeRoomMsg, attemptLockedRoomMsg } inventory directionItem =
 
 
 type alias PlayingParams msg =
-    { game : Game
-    , inventory : Inventory
+    { inventory : Inventory
     , currentRoom : Room
     , changeRoomMsg : { roomKey : String } -> msg
     , attemptLockedRoomMsg : msg
@@ -64,39 +66,63 @@ type alias PlayingParams msg =
 
 
 playingView : PlayingParams msg -> Element msg
-playingView { game, inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg, temporaryMessage, examineRoomMsg, useItemMsg } =
+playingView { inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg, temporaryMessage, examineRoomMsg, useItemMsg } =
     column
-        [ Background.color <| rgb255 10 10 10
-        , Font.color <| rgb255 250 250 250
-        , width fill
+        [ width fill
         , height fill
         , spacing 50
+        , padding 50
         ]
-        [ text <| Game.getName game
-        , text <| Room.getIntro currentRoom
-        , text <| Room.getSurroundings currentRoom inventory
-        , column [] <|
-            List.map
-                (direction
-                    { changeRoomMsg = changeRoomMsg
-                    , attemptLockedRoomMsg = attemptLockedRoomMsg
+        [ paragraph
+            []
+            [ text <| Room.getIntro currentRoom ]
+        , paragraph [ height fill ]
+            [ text <| Room.getSurroundings currentRoom inventory ]
+        , el [ height fill ] none
+        , wrappedRow
+            [ height fill
+            , width fill
+            , spacing 50
+            ]
+            [ column
+                [ height fill
+                , width fill
+                , spacing 20
+                ]
+              <|
+                Layout.header "Directions"
+                    :: (List.map
+                            (direction
+                                { changeRoomMsg = changeRoomMsg
+                                , attemptLockedRoomMsg = attemptLockedRoomMsg
+                                }
+                                inventory
+                            )
+                        <|
+                            Room.getAvailableDirections currentRoom
+                       )
+            , column
+                [ width fill
+                , height fill
+                , spacing 20
+                ]
+                [ Layout.header "Examine"
+                , Input.button []
+                    { onPress = Just <| examineRoomMsg currentRoom
+                    , label = text "Examine room"
                     }
-                    inventory
-                )
-            <|
-                Room.getAvailableDirections currentRoom
-        , Input.button []
-            { onPress = Just <| examineRoomMsg currentRoom
-            , label = text "Examine room"
-            }
-        , case temporaryMessage of
-            Just str ->
-                text str
+                , case temporaryMessage of
+                    Just str ->
+                        paragraph
+                            [ width fill ]
+                            [ text str ]
 
-            Nothing ->
-                none
-        , InventoryView.view
-            { inventory = inventory
-            , useItemMsg = useItemMsg
-            }
+                    Nothing ->
+                        none
+                ]
+            , InventoryView.view
+                { inventory = inventory
+                , useItemMsg = useItemMsg
+                }
+            ]
         ]

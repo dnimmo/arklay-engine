@@ -202,10 +202,9 @@ view on state =
         Loading ->
             GameView.loadingView
 
-        Playing { game, inventory, currentRoom, temporaryMessage } ->
+        Playing { inventory, currentRoom, temporaryMessage } ->
             GameView.playingView
-                { game = game
-                , inventory = inventory
+                { inventory = inventory
                 , currentRoom = currentRoom
                 , changeRoomMsg = on << ChangeRoom
                 , attemptLockedRoomMsg = on AttemptToEnterLockedRoom

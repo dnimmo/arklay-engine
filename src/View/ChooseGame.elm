@@ -5,18 +5,29 @@ module View.ChooseGame exposing
 
 import Dict exposing (Dict)
 import Element exposing (..)
+import Element.Border as Border
 import Game exposing (Game)
 import Route
 
 
 loadingView : Element msg
 loadingView =
-    text "Loading"
+    el
+        [ centerX
+        , centerY
+        ]
+    <|
+        text "..."
 
 
 gameItem : String -> Game -> Element msg
 gameItem id game =
-    link []
+    link
+        [ centerX
+        , paddingXY 50 20
+        , Border.width 1
+        , Border.rounded 5
+        ]
         { url = Route.toPath <| Route.Game id
         , label = text <| Game.getName game
         }
@@ -24,7 +35,11 @@ gameItem id game =
 
 gameList : Dict String Game -> Element msg
 gameList gameDict =
-    column []
+    column
+        [ width fill
+        , height fill
+        , paddingXY 0 50
+        ]
         (gameDict
             |> Dict.toList
             |> List.map
@@ -36,7 +51,11 @@ gameList gameDict =
 
 view : Dict String Game -> Element msg
 view gameDict =
-    column []
-        [ text "Choose game"
+    column
+        [ width fill
+        , height fill
+        , padding 50
+        ]
+        [ el [ centerX ] <| text "Choose a game"
         , gameList gameDict
         ]
