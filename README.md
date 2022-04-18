@@ -2,7 +2,7 @@
 
 I've written this project in many different technologies, and I tend to rebuild it every couple of years just for the sake of comparison (and my own enjoyment). Usually in the form of a text-adventure game, but this time in the form of an engine for processing text-adventure games.
 
-## Overview
+## Overview / Development
 
 ### State machines
 
@@ -20,7 +20,7 @@ All top-level modules (once again, with the exception of `Main`) expose a type t
 
 I decided that `Route` was a special case and that it might as well expose its variants to make it less of a headache to link between different routes, although I'm not actually convinced about this, so it may change at some point (and if it does, hopefully I'll remember to update this README too).
 
-### JSON structure
+## JSON structure
 
 In order to create a game, should you wish to, the structure of the JSON is as follows: 
 
