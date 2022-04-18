@@ -4,7 +4,7 @@ I've written this project in many different technologies, and I tend to rebuild 
 
 ## Overview / Development
 
-### State machines
+### State machines
 
 Anything with its own `update` function, `State`, and `Msg` types is what I mean when I say "State machine" here. With the exception of `Main`, these are stored under `src/State/` in the directory structure. 
 
@@ -20,7 +20,7 @@ All top-level modules (once again, with the exception of `Main`) expose a type t
 
 I decided that `Route` was a special case and that it might as well expose its variants to make it less of a headache to link between different routes, although I'm not actually convinced about this, so it may change at some point (and if it does, hopefully I'll remember to update this README too).
 
-## JSON structure
+## JSON structure
 
 In order to create a game, should you wish to, the structure of the JSON is as follows: 
 
