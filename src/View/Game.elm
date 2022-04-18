@@ -8,6 +8,7 @@ import Element.Input as Input
 import Game exposing (Game)
 import Inventory exposing (Inventory)
 import Room exposing (Room)
+import View.Inventory as InventoryView
 
 
 loadingView : Element msg
@@ -90,4 +91,5 @@ playingView { game, inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg,
 
             Nothing ->
                 none
+        , InventoryView.view inventory
         ]

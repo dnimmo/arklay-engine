@@ -24,6 +24,16 @@ getName (Item { name }) =
     name
 
 
+getMessageWhenUsed : Item -> String
+getMessageWhenUsed (Item { messageWhenUsed }) =
+    messageWhenUsed
+
+
+getMessageWhenUnableToUse : Item -> String
+getMessageWhenUnableToUse (Item { messageWhenUnableToUse }) =
+    messageWhenUnableToUse
+
+
 
 -- DECODE
 

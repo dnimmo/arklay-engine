@@ -3,6 +3,7 @@ module Inventory exposing
     , addItem
     , containsItem
     , emptyInventory
+    , getItemsWithIds
     )
 
 import Dict exposing (Dict)
@@ -29,3 +30,8 @@ emptyInventory : Inventory
 emptyInventory =
     Inventory
         { items = Dict.empty }
+
+
+getItemsWithIds : Inventory -> List ( String, Item )
+getItemsWithIds (Inventory { items }) =
+    Dict.toList items
