@@ -24,7 +24,7 @@
           "messageOnUnsuccessfulEntryAttempt":null
         },
         "ENTRANCE":{
-          "name":"Enter",
+          "name":"Foyer",
           "intro":"You are in the dim foyer of what appears to be a mansion.",
           "surroundings":"There is a grand staircase here, as well as a couple of doors.",
           "surroundingsWhenItemPickedUp":null,
@@ -1365,7 +1365,7 @@
         "END":{
           "name":"End",
           "intro":"Congratulations!",
-          "surroundings":"Thanks for playing; I'm sorry if this is a bit of an anti-climax, but I'm not really expecting anyone to ever see this message to be honest. If you did, then send me a tweet! @_dnimmo",
+          "surroundings":"Thanks for playing! I'm sorry if this is a bit of an anti-climax, but I'm not really expecting anyone to ever see this message to be honest.",
           "surroundingsWhenItemPickedUp":null,
           "surroundingsWhenItemUsed":null,
           "item":null,

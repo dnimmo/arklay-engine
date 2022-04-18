@@ -5,6 +5,7 @@ module Room exposing
     , getExaminationText
     , getIntro
     , getMaybeItem
+    , getName
     , getSurroundings
     , itemCanBeUsed
     )
@@ -28,6 +29,11 @@ type alias Details =
     , item : Maybe String
     , availableDirections : List Direction
     }
+
+
+getName : Room -> String
+getName (Room { name }) =
+    name
 
 
 getIntro : Room -> String

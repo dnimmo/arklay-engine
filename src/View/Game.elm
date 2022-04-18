@@ -73,7 +73,8 @@ playingView { inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg, tempo
         , spacing 50
         , padding 50
         ]
-        [ paragraph
+        [ Layout.header <| Room.getName currentRoom
+        , paragraph
             []
             [ text <| Room.getIntro currentRoom ]
         , paragraph [ height fill ]
