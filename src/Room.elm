@@ -23,6 +23,7 @@ type alias Details =
     , intro : String
     , surroundings : String
     , surroundingsWhenItemPickedUp : Maybe String
+    , surroundingsWhenItemUsed : Maybe String
     , examinationText : String
     , item : Maybe String
     , availableDirections : List Direction
@@ -34,18 +35,33 @@ getIntro (Room { intro }) =
     intro
 
 
+itemHasBeenUsedInThisRoom : Room -> Inventory -> Bool
+itemHasBeenUsedInThisRoom (Room { availableDirections }) inventory =
+    availableDirections
+        |> List.concatMap Direction.getUsableItems
+        |> List.any (Inventory.itemHasBeenUsed inventory)
+
+
 getSurroundings : Room -> Inventory -> String
-getSurroundings (Room { surroundings, item, surroundingsWhenItemPickedUp }) inventory =
+getSurroundings ((Room { surroundings, item, surroundingsWhenItemPickedUp, surroundingsWhenItemUsed }) as room) inventory =
+    let
+        baseSurroundings =
+            if itemHasBeenUsedInThisRoom room inventory then
+                Maybe.withDefault surroundings surroundingsWhenItemUsed
+
+            else
+                surroundings
+    in
     case item of
         Just itemId ->
             if Inventory.containsItem inventory itemId then
                 Maybe.withDefault surroundings surroundingsWhenItemPickedUp
 
             else
-                surroundings
+                baseSurroundings
 
         Nothing ->
-            surroundings
+            baseSurroundings
 
 
 getAvailableDirections : Room -> List Direction
@@ -77,11 +93,12 @@ itemCanBeUsed (Room { availableDirections }) itemId =
 
 detailsDecoder : Decoder Details
 detailsDecoder =
-    Decode.map7 Details
+    Decode.map8 Details
         (Decode.field "name" Decode.string)
         (Decode.field "intro" Decode.string)
         (Decode.field "surroundings" Decode.string)
         (Decode.field "surroundingsWhenItemPickedUp" <| Decode.maybe Decode.string)
+        (Decode.field "surroundingsWhenItemUsed" <| Decode.maybe Decode.string)
         (Decode.field "descriptionWhenExamined" Decode.string)
         (Decode.field "item" <| Decode.maybe Decode.string)
         (Decode.field "availableDirections" <| Decode.list Direction.decode)
