@@ -3,6 +3,7 @@ module Direction exposing
     , decode
     , getRoomId
     , getText
+    , isLocked
     )
 
 import Json.Decode as Decode exposing (Decoder)
@@ -27,6 +28,11 @@ getText (Direction { text }) =
 getRoomId : Direction -> String
 getRoomId (Direction { room }) =
     room
+
+
+isLocked : Direction -> Bool
+isLocked (Direction { itemsThatCanBeUsed }) =
+    not <| List.isEmpty itemsThatCanBeUsed
 
 
 

@@ -3,6 +3,7 @@ module Game exposing
     , decode
     , fetchGames
     , fetchSpecificGame
+    , getItem
     , getName
     , getRoom
     , getStartingRoom
@@ -35,6 +36,11 @@ getName (Game { name }) =
 getRoom : Game -> String -> Maybe Room
 getRoom (Game { rooms }) roomKey =
     Dict.get roomKey rooms
+
+
+getItem : Game -> String -> Maybe Item
+getItem (Game { items }) itemKey =
+    Dict.get itemKey items
 
 
 getStartingRoom : Game -> Maybe Room

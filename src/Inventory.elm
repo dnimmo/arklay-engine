@@ -1,13 +1,31 @@
-module Inventory exposing (Inventory, emptyInventory)
+module Inventory exposing
+    ( Inventory
+    , addItem
+    , containsItem
+    , emptyInventory
+    )
 
 import Dict exposing (Dict)
 import Item exposing (Item)
 
 
 type Inventory
-    = Inventory (Maybe (Dict String Item))
+    = Inventory { items : Dict String Item }
+
+
+addItem : Inventory -> String -> Item -> Inventory
+addItem (Inventory { items }) itemId item =
+    Inventory <|
+        { items = Dict.insert itemId item items
+        }
+
+
+containsItem : Inventory -> String -> Bool
+containsItem (Inventory { items }) itemId =
+    Dict.member itemId items
 
 
 emptyInventory : Inventory
 emptyInventory =
-    Inventory Nothing
+    Inventory
+        { items = Dict.empty }

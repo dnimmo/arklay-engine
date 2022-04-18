@@ -2,7 +2,9 @@ module Room exposing
     ( Room
     , decode
     , getAvailableDirections
+    , getExaminationText
     , getIntro
+    , getMaybeItem
     , getSurroundings
     )
 
@@ -37,6 +39,16 @@ getSurroundings (Room { surroundings }) =
 getAvailableDirections : Room -> List Direction
 getAvailableDirections (Room { availableDirections }) =
     availableDirections
+
+
+getExaminationText : Room -> String
+getExaminationText (Room { examinationText }) =
+    examinationText
+
+
+getMaybeItem : Room -> Maybe String
+getMaybeItem (Room { item }) =
+    item
 
 
 

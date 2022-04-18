@@ -1,4 +1,8 @@
-module Item exposing (Item, decode)
+module Item exposing
+    ( Item
+    , decode
+    , getName
+    )
 
 import Json.Decode as Decode exposing (Decoder)
 
@@ -13,6 +17,11 @@ type alias Details =
     , messageWhenUsed : String
     , messageWhenUnableToUse : String
     }
+
+
+getName : Item -> String
+getName (Item { name }) =
+    name
 
 
 
