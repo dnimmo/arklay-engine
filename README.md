@@ -8,11 +8,11 @@ I've written this project in many different technologies, and I tend to rebuild 
 
 Anything with its own `update` function, `State`, and `Msg` types is what I mean when I say "State machine" here. With the exception of `Main`, these are stored under `src/State/` in the directory structure. 
 
-Each state machine also has a `view` function, but that function is only responsible for calling relevant views from `src/View`. Because of this, none of the State Machine modules should be using anything from the `Element` module other than the `Element` type itself, which is only used for type annotations.
+Each state machine also has a `view` function, but that function is only responsible for calling relevant views from `src/View/`. Because of this, none of the State Machine modules should be using anything from the `Element` module other than the `Element` type itself, which is only used for type annotations.
 
 ### Views 
 
-Anything that is rendered to the user (again with the exception of `Main`) is stored in a module in `src/View`. Note, one module may have multiple different exposed functions here, depending on the needs of the rest of the application. There should be a corresponding `View` function for any given `State Machine`, but the inverse is not necessarily true; `View` modules can exist without a corresponding `State Machine`. 
+Anything that is rendered to the user (again with the exception of `Main`) is stored in a module in `src/View/`. Note, one module may have multiple different exposed functions here, depending on the needs of the rest of the application. There should be a corresponding `View` function for any given `State Machine`, but the inverse is not necessarily true; `View` modules can exist without a corresponding `State Machine`. 
 
 ### Types
 
