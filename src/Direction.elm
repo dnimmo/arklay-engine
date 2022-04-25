@@ -9,7 +9,6 @@ module Direction exposing
 
 import Inventory exposing (Inventory)
 import Json.Decode as Decode exposing (Decoder)
-import Set
 
 
 type Direction
