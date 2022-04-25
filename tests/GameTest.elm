@@ -1,4 +1,4 @@
-module Example exposing (..)
+module GameTest exposing (..)
 
 import Expect
 import Game exposing (Game)
