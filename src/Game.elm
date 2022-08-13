@@ -7,6 +7,7 @@ module Game exposing
     , getName
     , getRoom
     , getStartingRoom
+    , getStartingRoomKey
     )
 
 import Dict exposing (Dict)
@@ -41,6 +42,11 @@ getRoom (Game { rooms }) roomKey =
 getItem : Game -> String -> Maybe Item
 getItem (Game { items }) itemKey =
     Dict.get itemKey items
+
+
+getStartingRoomKey : Game -> String
+getStartingRoomKey (Game { startingRoom }) =
+    startingRoom
 
 
 getStartingRoom : Game -> Maybe Room

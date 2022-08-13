@@ -4,11 +4,13 @@ module Direction exposing
     , getRoomId
     , getText
     , getUsableItems
+    , hasBeenVisited
     , isLocked
     )
 
 import Inventory exposing (Inventory)
 import Json.Decode as Decode exposing (Decoder)
+import Set exposing (Set)
 
 
 type Direction
@@ -44,6 +46,11 @@ isLocked (Direction { itemsThatCanBeUsed }) inventory =
 getUsableItems : Direction -> List String
 getUsableItems (Direction { itemsThatCanBeUsed }) =
     itemsThatCanBeUsed
+
+
+hasBeenVisited : Direction -> Set String -> Bool
+hasBeenVisited (Direction { room }) visitedRooms =
+    Set.member room visitedRooms
 
 
 

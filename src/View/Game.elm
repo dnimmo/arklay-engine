@@ -6,6 +6,7 @@ import Element exposing (..)
 import Element.Input as Input
 import Inventory exposing (Inventory)
 import Room exposing (Room)
+import Set exposing (Set)
 import View.Inventory as InventoryView
 
 
@@ -19,14 +20,26 @@ loadingView =
         text "..."
 
 
+decorateDirection : String -> Bool -> String
+decorateDirection label visited =
+    label
+        ++ (if visited then
+                " (visited)"
+
+            else
+                ""
+           )
+
+
 direction :
     { changeRoomMsg : { roomKey : String } -> msg
     , attemptLockedRoomMsg : msg
+    , visitedRooms : Set String
     }
     -> Inventory
     -> Direction
     -> Element msg
-direction { changeRoomMsg, attemptLockedRoomMsg } inventory directionItem =
+direction { changeRoomMsg, attemptLockedRoomMsg, visitedRooms } inventory directionItem =
     let
         isLocked =
             Direction.isLocked directionItem inventory
@@ -50,7 +63,9 @@ direction { changeRoomMsg, attemptLockedRoomMsg } inventory directionItem =
                         }
         , label =
             Element.text <|
-                Direction.getText directionItem
+                decorateDirection
+                    (Direction.getText directionItem)
+                    (Direction.hasBeenVisited directionItem visitedRooms)
         }
 
 
@@ -62,11 +77,12 @@ type alias PlayingParams msg =
     , examineRoomMsg : Room -> msg
     , temporaryMessage : Maybe String
     , useItemMsg : String -> msg
+    , visitedRooms : Set String
     }
 
 
 playingView : PlayingParams msg -> Element msg
-playingView { inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg, temporaryMessage, examineRoomMsg, useItemMsg } =
+playingView { inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg, temporaryMessage, examineRoomMsg, useItemMsg, visitedRooms } =
     column
         [ width fill
         , height fill
@@ -96,6 +112,7 @@ playingView { inventory, currentRoom, changeRoomMsg, attemptLockedRoomMsg, tempo
                             (direction
                                 { changeRoomMsg = changeRoomMsg
                                 , attemptLockedRoomMsg = attemptLockedRoomMsg
+                                , visitedRooms = visitedRooms
                                 }
                                 inventory
                             )

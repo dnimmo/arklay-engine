@@ -12,6 +12,7 @@ import Http
 import Inventory exposing (Inventory)
 import Item
 import Room exposing (Room)
+import Set exposing (Set)
 import View.Error as ErrorView
 import View.Game as GameView
 
@@ -27,6 +28,7 @@ type State
         , inventory : Inventory
         , currentRoom : Room
         , temporaryMessage : Maybe String
+        , visitedRooms : Set String
         }
     | HttpError Http.Error
     | GameError String
@@ -59,6 +61,9 @@ handleRoomChange state roomKey =
                         { gameDetails
                             | currentRoom = newRoom
                             , temporaryMessage = Nothing
+                            , visitedRooms =
+                                gameDetails.visitedRooms
+                                    |> Set.insert roomKey
                         }
 
                 Nothing ->
@@ -157,6 +162,9 @@ update msg state =
                         , inventory = Inventory.emptyInventory
                         , currentRoom = startingRoom
                         , temporaryMessage = Nothing
+                        , visitedRooms =
+                            Set.empty
+                                |> Set.insert (Game.getStartingRoomKey game)
                         }
                     , Cmd.none
                     )
@@ -202,7 +210,7 @@ view on state =
         Loading ->
             GameView.loadingView
 
-        Playing { inventory, currentRoom, temporaryMessage } ->
+        Playing { inventory, currentRoom, temporaryMessage, visitedRooms } ->
             GameView.playingView
                 { inventory = inventory
                 , currentRoom = currentRoom
@@ -211,6 +219,7 @@ view on state =
                 , temporaryMessage = temporaryMessage
                 , examineRoomMsg = on << ExamineRoom
                 , useItemMsg = on << AttemptToUseItem
+                , visitedRooms = visitedRooms
                 }
 
         HttpError err ->
